@@ -1,0 +1,21 @@
+  ${nodename}:
+    image: solider12/ubuntu_es:1.0
+    container_name: ${nodename}
+    environment:
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "${inIp}:${inIp}"
+      - "${outIp}:${outIp}"
+    volumes:
+      - ./${title}/conf/es.yml:/usr/local/es/config/elasticsearch.yml
+      - /usr/local/java8:/usr/local/java8
+    networks:
+      - net-es
+

@@ -1,0 +1,9 @@
+FROM ubuntu:latest
+MAINTAINER solider12@XXX.com
+COPY es_outer es_install.sh /usr/local/
+RUN sh /usr/local/es_install.sh
+VOLUME ["/usr/local/java8"]
+VOLUME ["/usr/local/es/config/elasticsearch.yml"]
+EXPOSE 9202
+USER esuser
+CMD ["/usr/local/es/bin/elasticsearch"]

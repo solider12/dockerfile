@@ -1,0 +1,13 @@
+cluster.name: es-cluster
+node.name: ${name}
+node.master: ${is_master}
+node.data: true
+path.data: /var/lib/es
+path.logs: /var/log/es
+bootstrap.memory_lock: true
+network.bind_host: 0.0.0.0
+network.publish_host: 0.0.0.0
+http.port: ${inIp}
+transport.tcp.port: ${outIp}
+discovery.seed_hosts: ${address}
+cluster.initial_master_nodes: ${master}
