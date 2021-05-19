@@ -1,0 +1,38 @@
+FROM ubuntu:latest
+MAINTAINER solider12 "1002331302@qq.com"
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN groupadd mysql
+RUN useradd -g mysql mysql
+
+RUN echo "deb http://cn.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse" >> /etc/apt/sources.list
+
+RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections
+RUN echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections
+
+RUN apt-get update && apt-get install -y mysql-server-5.7 && apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /etc/mysql/conf.d/mysqld_safe_syslog.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+
+#ADD mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+ADD debian-start.inc.sh /usr/share/mysql/debian-start.inc.sh
+
+#RUN chown mysql:mysql /etc/mysql/mysql.conf.d/mysqld.cnf
+
+# Create MySQL socket / lock directory
+RUN mkdir -p /var/run/mysqld  && \
+    chown mysql:mysql /var/run/mysqld /var/lib/mysql
+RUN cat /usr/share/mysql/debian-start.inc.sh
+
+# Add init script
+ADD init.sh /etc/init.sh 
+RUN chown root:root /etc/init.sh /usr/share/mysql/debian-start.inc.sh && \
+    chmod 755 /etc/init.sh /usr/share/mysql/debian-start.inc.sh
+
+VOLUME ["/var/lib/mysql"]
+
+VOLUME ["/etc/mysql/mysql.conf.d/mysqld.cnf"]
+
+EXPOSE 3306
+
+ENTRYPOINT ["/etc/init.sh"]

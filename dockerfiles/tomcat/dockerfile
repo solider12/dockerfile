@@ -1,0 +1,37 @@
+FROM ubuntu:latest
+
+MAINTAINER guorong 1002331302@qq.com
+
+ADD apache-tomcat-8.5.30.tar.gz /usr/local
+
+#ADD jdk-8u202-linux-x64.tar.gz /usr/local
+
+RUN mv /usr/local/apache-tomcat-8.5.30 /usr/local/tomcat
+
+#RUN mv /usr/local/jdk1.8.0_202 /usr/local/java8
+
+RUN chmod -R +x /usr/local/tomcat/bin
+
+#RUN chmod -R +x /usr/local/java8/jre
+
+RUN mv /usr/local/tomcat/webapps /usr/local/tomcat/webapps_dist
+
+VOLUME ["/usr/local/java8"]
+
+VOLUME ["/usr/local/tomcat/webapps"]
+
+VOLUME ["/usr/local/tomcat/logs"]
+
+ENV JAVA_HOME /usr/local/java8
+
+ENV JRE_HOME ${JAVA_HOME}/jre
+
+ENV CLASSPATH .:${JAVA_HOME}/lib:${JRE_HOME}/lib
+
+ENV CATALINA_HOME /usr/local/tomcat
+
+ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/local/tomcat/bin/catalina.sh","run"]

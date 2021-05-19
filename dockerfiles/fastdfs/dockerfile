@@ -1,0 +1,56 @@
+FROM ubuntu:latest
+
+MAINTAINER guorong 1002331302@qq.com
+
+RUN apt-get update && apt-get install git gcc make libtool libpcre3-dev libpcre3 unzip -y
+
+RUN apt-get update && apt-get install ruby zlib1g zlib1g.dev -y
+
+RUN mkdir -p /home/fastdfs/tracker
+RUN mkdir -p /home/fastdfs/storage
+
+RUN ls /home/fastdfs
+WORKDIR /usr/local/src
+#复制并解压缩各种源码
+ADD container /usr/local/src
+RUN cp -r /usr/local/src/tools/* .
+RUN rm -rf tools
+# 安装 libfastcommon
+
+RUN /usr/bin/unzip ./libfastcommon-master.zip
+WORKDIR /usr/local/src/libfastcommon-master
+RUN ./make.sh && ./make.sh install
+
+# 安装 FastDFS
+WORKDIR /usr/local/src
+RUN /usr/bin/unzip ./fastdfs-master.zip
+WORKDIR /usr/local/src/fastdfs-master
+RUN ./make.sh && ./make.sh install
+RUN cp /usr/local/src/tracker.conf /etc/fdfs/tracker.conf
+RUN cp /usr/local/src/storage.conf /etc/fdfs/storage.conf
+RUN cp /usr/local/src/client.conf /etc/fdfs/client.conf
+RUN cp /usr/local/src/fastdfs-master/conf/http.conf /etc/fdfs/
+RUN cp /usr/local/src/fastdfs-master/conf/mime.types /etc/fdfs/
+
+#安装fastdfs-nginx-module
+WORKDIR /usr/local/src
+RUN /usr/bin/unzip ./fastdfs-nginx-module-master.zip
+RUN cp /usr/local/src/mod_fastdfs.conf /etc/fdfs
+#安装nginx
+RUN /usr/bin/tar -zxvf ./nginx-1.16.1.tar.gz
+WORKDIR /usr/local/src/nginx-1.16.1
+RUN ./configure --add-module=/usr/local/src/fastdfs-nginx-module-master/src/
+RUN make && make install
+
+RUN cp /usr/local/src/nginx.conf /usr/local/nginx/conf
+#挂载文件夹
+VOLUME ["/home/fastdfs/tracker"]
+VOLUME ["/home/fastdfs/storage"]
+#启动文件
+RUN cp /usr/local/src/start.sh /usr/local/bin/
+RUN ls /usr/local/bin
+RUN chmod +x /usr/local/bin/start.sh
+ENTRYPOINT ["/usr/local/bin/start.sh"]
+
+WORKDIR /
+EXPOSE 8888

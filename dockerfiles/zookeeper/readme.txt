@@ -1,0 +1,1 @@
+安装完maven和tomcat,进入dubbo-dubbo-2.6.0\dubbo-admin\src\main\webapp\WEB-INF\dubbo.properties修改。完成后cd 到 dubbo-admin目录，用maven命令打包:mvn package -Dmaven.skip.test=true,将完成的包dubbo-admin-2.6.0.war,放到tomcat webapps下，然后localhost:8080/dubbo-admin-2.6.0访问，输入账号root.密码root即可。

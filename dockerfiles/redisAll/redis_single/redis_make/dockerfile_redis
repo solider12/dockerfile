@@ -1,0 +1,8 @@
+FROM ubuntu:latest
+MAINTAINER solider12@XXX.com
+ADD redis-5.0.10.tar.gz /home
+COPY redis_install.sh /home
+RUN sh /home/redis_install.sh
+EXPOSE 6379
+EXPOSE 16379
+

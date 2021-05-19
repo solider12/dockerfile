@@ -1,0 +1,12 @@
+redis-${PORT}: # 服务名称
+    image: solider12/ubuntu_redis:1.0 # 创建容器时所需的镜像
+    container_name: redis-${PORT} # 容器名称
+    restart: always # 容器总是重新启动
+    network_mode: "host" # host 网络模式
+    ports:
+      - ${PORT}:6379
+      - 1${PORT}:16379
+    volumes: # 数据卷，目录挂载
+      - $PWD/${PORT}/conf/redis.conf:/usr/local/redis/bin/redis.conf
+      - $PWD/${PORT}/data:/data
+    command: /usr/local/redis/bin/redis-server /usr/local/redis/bin/redis.conf

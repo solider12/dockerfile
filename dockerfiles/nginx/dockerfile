@@ -1,0 +1,31 @@
+FROM ubuntu:latest
+MAINTAINER solider12 "1002331302@qq.com"
+ENV DEBIAN_FRONTEND=noninteractive
+# 将nginx以及pcre源代码加入镜像
+ADD nginx-1.16.0.tar.gz /usr/local/src/
+ADD pcre-8.37.tar.gz /usr/local/src
+# 安装编译器，当然是ubuntu的安装方法apt-get
+RUN apt-get update
+RUN apt-get install gcc -y
+RUN apt-get install g++ -y
+RUN apt-get install make -y
+# 指定工作目录
+WORKDIR /usr/local/src/nginx-1.16.0/
+# 编译nginx
+RUN ./configure --prefix=/usr/local/nginx --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.37 && make && make install
+RUN echo "daemon off;" >> /usr/local/nginx/conf/nginx.conf
+# 设置环境变量
+RUN rm -rf /usr/local/nginx/nginx.conf
+
+ENV PATH /usr/local/nginx/sbin:$PATH
+
+VOLUME ["/usr/local/nginx/html"]
+
+VOLUME ["/usr/local/nginx/nginx.conf"]
+
+VOLUME ["/var/log/nginx"]
+
+# 暴露80端口
+EXPOSE 80
+# 容器默认启动命令
+ENTRYPOINT ["nginx"]
